@@ -1,0 +1,7 @@
+{
+  "name": "MindsSDKDemo",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
