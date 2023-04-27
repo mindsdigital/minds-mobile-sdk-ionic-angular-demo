@@ -1,20 +1,46 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="ion-padding ion-text-center">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="banner">
+    <img src="assets/images/Banner.svg" alt="Banner Minds Digital">
+  </div>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div class="title_text">
+    <h1 class="title">Olá :) Seja Bem-vindo</h1>
+    <p class="subtitle">Preencha os dados abaixo e confira nosso conteúdo</p>
+  </div>
+
+  <div class="form">
+    <form>
+      <div class="input-container">
+        <img class="icon" src="assets/icon/id-card.svg" alt="card_icon">
+        <input class="input" type="text" id="cpf" name="cpf" placeholder="CPF" #cpfInput>
+      </div>
+      <div class="input-container phone-input">
+        <img class="icon" src="assets/icon/phone.svg" alt="card_icon">
+        <input class="input" type="text" id="phone-number" name="phone-number" placeholder="Telefone + DDD" #phoneInput>
+      </div>
+      <div class="buttons">
+        <button class="button enrollment-button" (click)="enrollment(cpfInput.value, phoneInput.value)">
+          Cadastro por voz
+        </button>
+        <button class="button authentication-button" (click)="authenticate(cpfInput.value, phoneInput.value)">
+          Autenticação por voz
+        </button>
+      </div>
+    </form>
+    <img class="minds-logo" src="assets/images/logo.svg" alt="logo-minds">
   </div>
 </ion-content>
+<div class="modal" *ngIf="showModal">
+  <img class="arrow-down" src="assets/icon/chevron-down.svg" alt="icon-arrow-down" (click)="toogleModal()">
+  <div class="badges">
+    <div class="badge">success: {{biometricsResponse?.success}}</div>
+    <div class="badge">status: {{biometricsResponse?.details?.voice_match?.result}}</div>
+    <div class="badge">confidence: {{biometricsResponse?.details?.voice_match?.confidence}}</div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <pre class="response-json">{{responseJson}}</pre>
+    </div>
+  </div>
+</div>

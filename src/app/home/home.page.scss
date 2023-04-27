@@ -1,27 +1,144 @@
-#container {
-  text-align: center;
+.banner {
+  margin-top: 32px;
+}
 
+.title {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 29px;
+  text-align: center;
+  color: #242424;
+}
+
+.subtitle {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+  text-align: center;
+  color: #5F5F5F;
+}
+
+.input {
+  width: 100%;
+  border: none;
+  border-radius: 0px;
+  border-bottom: 1px solid rgba(37, 37, 37, 0.2);
+  outline: none;
+  padding-left: 32px;
+}
+
+.form {
+  margin-top: 32px;
+}
+
+
+.icon {
+  width: 18px;
   position: absolute;
+  padding-top: 6px;
+}
+
+.phone-input {
+  padding-top: 32px !important;
+}
+
+.button {
+  width: 300px;
+  height: 35px;
+  background: #17CEAB;
+  border-radius: 30px;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 15px;
+  text-align: center;
+}
+
+.enrollment-button {
+  color: white;
+}
+
+.authentication-button {
+  color: #17CEAB;
+  background: #141540;
+  margin-top: 8px;
+}
+
+
+.buttons {
+  margin-top: 32px;
+}
+
+.minds-logo {
+  margin-top: 42px;
+}
+
+.modal {
+  position: absolute;
+  padding: 0 24px;
+  top: 12%;
+  height: 100%;
+  background-color: white;
+  width: 100%;
+  box-shadow: 0px 4px 88px rgba(37, 37, 37, 0.5);
+  border-radius: 60px 60px 0px 0px;
+  overflow-y: auto;
+}
+
+.arrow-down {
+  top: 20px;
   left: 0;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  margin-left: auto;
+  margin-right: auto;
+  position: absolute;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.badges {
+  display: flex;
+  margin-top: 72px;
+  justify-content: center;
 }
 
-#container p {
+.badge {
+  padding: 8px 12px;
+  background: rgba(23, 206, 171, 0.2);
+  border-radius: 30px;
+  font-style: normal;
+  font-weight: 400;
   font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+  text-align: center;
+  color: #000000;
 }
 
-#container a {
-  text-decoration: none;
+.badge:nth-child(2) {
+  margin: 0 4px;
+}
+
+.card {
+  margin: 20px;
+  overflow: hidden;
+  background: rgba(37, 37, 37, 0.1);
+  border-radius: 30px;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.response-json {
+  color: #17CEAB;
+  font-style: normal;
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 26px;
 }
