@@ -1,5 +1,5 @@
 
-# Minds Mobile SDK Flutter Demo
+# Minds Mobile SDK Ionic Angular Demo
 
 Esta é uma documentação para a integração da SDK da Minds Digital em um projeto Ionic.
 
