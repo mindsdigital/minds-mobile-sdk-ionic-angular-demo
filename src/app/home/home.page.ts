@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
+import { LoadingController, ToastController } from '@ionic/angular';
 import Minds from 'src/plugins/minds_plugin'
-import { Microphone } from '@mozartec/capacitor-microphone';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { VoiceBiometricsResponse } from 'src/types/voiceBiometrics';
+import { Microphone } from '@mozartec/capacitor-microphone';
 
 @Component({
   selector: 'app-home',
@@ -10,60 +10,57 @@ import { VoiceBiometricsResponse } from 'src/types/voiceBiometrics';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  constructor() { }
 
-  public showModal: boolean = false
-  public isLoading: boolean = false
+  public showModal = false;
   public biometricsResponse: VoiceBiometricsResponse | null = null;
 
+  constructor(
+    private toastController: ToastController,
+    private loadingController: LoadingController,
+  ) { }
 
-  get responseJson() {
+  get responseJson(): string {
     return JSON.stringify(this.biometricsResponse, null, 2);
   }
 
-  toogleModal() {
-    this.showModal = !this.showModal
+
+  async presentLoading() {
+    const loading = await this.loadingController.create({
+      message: 'Carregando...',
+    });
+    await loading.present();
+    return loading;
   }
 
-  async authenticate(cpf: string, phoneNumber: string) {
+  async toogleModal() {
+    this.showModal = !this.showModal;
+  }
+
+  async handleAuthOrEnrollment(method: 'authentication' | 'enrollment', cpf: string, phoneNumber: string) {
+    const loading = await this.presentLoading();
     try {
-      this.isLoading = true
-      const result = await Minds.authentication({
+      const result = await Minds[method]({
         cpf: cpf,
-        token: '',
+        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzZWNyZXRfNzBfYXBpIiwiY29tcGFueV9pZCI6NzB9.GWysHY9cAcfhuKPsxVRgRbfUlPWk4EwVOJ923SQU5KI',
         telephone: phoneNumber,
-      })
-      this.biometricsResponse = result
-      this.isLoading = false
-      this.toogleModal()
+      });
+      this.biometricsResponse = result;
+      this.toogleModal();
     } catch (e: any) {
-      console.log(e.message);
-      this.isLoading = false
+      const toast = await this.toastController.create({
+        message: e.message,
+        duration: 2000,
+        color: 'danger',
+        position: 'bottom',
+      });
+      toast.present();
+    } finally {
+      loading.dismiss();
     }
   }
-
-  async enrollment(cpf: string, phoneNumber: string) {
-    try {
-      this.isLoading = true
-      const result = await Minds.enrollment({
-        cpf: cpf,
-        token: '',
-        telephone: phoneNumber,
-      })
-      this.biometricsResponse = result
-      this.isLoading = false
-      this.toogleModal()
-    } catch (e: any) {
-      console.log(e.message);
-      this.isLoading = false
-    }
-  }
-
-
 
   async requestPermissions() {
     return await Microphone.requestPermissions();
   }
 
 }
-
