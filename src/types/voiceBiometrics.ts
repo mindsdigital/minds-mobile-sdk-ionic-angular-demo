@@ -24,10 +24,6 @@ export interface VoiceBiometricsResponse {
             confidence: number;
             status: string;
         };
-        antispoofing: {
-            result: string;
-            status: string;
-        };
     };
 }
 
