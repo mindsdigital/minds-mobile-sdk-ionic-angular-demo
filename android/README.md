@@ -82,8 +82,8 @@ Para adicionar as dependências necessárias para o projeto, inclua as seguintes
 ```gradle
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'digital.minds.clients.sdk.android:release:1.17.2'
-    implementation 'digital.minds.clients.sdk.kotlin.core:release:1.0.13'
+    implementation 'digital.minds.clients.sdk.android:release:1.17.5'
+    implementation 'digital.minds.clients.sdk.kotlin.core:release:1.0.16'
 }
 ```
 
