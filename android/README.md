@@ -349,7 +349,7 @@ Após realizar este registro, o plugin estará pronto para ser utilizado em sua 
 
 O plugin exporta uma interface chamada `MindsPlugin` com dois métodos, `authentication` e `enrollment`, ambos recebendo um objeto `options` com as informações necessárias para autenticação ou cadastro de voz. O método authentication retorna um objeto Promise com o resultado.
 
-Para facilitar crie uma interface para receber o resultado do plugim:
+Para facilitar crie uma interface para receber o resultado do plugin:
 
 <details>
 <summary>VoiceBiometricsResponse</summary>
@@ -412,7 +412,7 @@ export default Minds;
 
 Em caso de erro "What went wrong: Execution failed for task `:app:processDebugMainManifest` , você deve adicionar a tag "tools:replace" com o valor "android:label" dentro da tag <application> no arquivo AndroidManifest.xml do seu projeto. 
 
-Esse erro ocorre porque há um conflito no arquivo AndroidManifest.xml, especificamente com a tag <application>. O atributo application@label está presente tanto no arquivo AndroidManifest.xml do projeto quanto no arquivo AndroidManifest.xml da SDK da Minds.
+Esse erro ocorre porque há um conflito no arquivo AndroidManifest.xml, especificamente com a tag `application`. O atributo application@label está presente tanto no arquivo AndroidManifest.xml do projeto quanto no arquivo AndroidManifest.xml da SDK da Minds.
 
 O código deve ficar assim:
 
@@ -423,6 +423,13 @@ O código deve ficar assim:
 ```
 
 Dessa forma, o atributo label do arquivo da SDK será substituído pelo atributo label do seu projeto. Essa configuração permitirá que o erro seja resolvido.
+
+# Referências
+
+Para mais informações sobre o Capacitor acessar documentação oficieal em: https://capacitorjs.com/docs/plugins/android
+
+  
+  
 
 
 
