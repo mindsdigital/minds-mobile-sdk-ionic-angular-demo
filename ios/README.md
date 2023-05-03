@@ -483,7 +483,7 @@ export default Minds;
 
 # Referências
 
-Para mais informações sobre o Capacitor acessar documentação oficieal em: https://capacitorjs.com/docs/plugins/android
+Para mais informações sobre o Capacitor acessar documentação oficieal em: https://capacitorjs.com/docs/plugins/ios
 
 
 
