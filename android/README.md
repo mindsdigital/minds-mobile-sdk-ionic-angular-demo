@@ -1,4 +1,7 @@
 
+# Pré-requisitos
+
+Antes de iniciar é necessário ter instalado e configurado o Capacitor em seu projeto.
 
 # Configuração do Projeto
 
