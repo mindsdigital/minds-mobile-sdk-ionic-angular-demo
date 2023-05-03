@@ -1,4 +1,7 @@
 
+# Pré-requisitos
+
+Antes de iniciar é necessário ter instalado e configurado o Capacitor em seu projeto.
 
 # Configuração do Projeto
 
@@ -79,8 +82,8 @@ Para adicionar as dependências necessárias para o projeto, inclua as seguintes
 ```gradle
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'digital.minds.clients.sdk.android:release:1.17.2'
-    implementation 'digital.minds.clients.sdk.kotlin.core:release:1.0.13'
+    implementation 'digital.minds.clients.sdk.android:release:1.17.5'
+    implementation 'digital.minds.clients.sdk.kotlin.core:release:1.0.16'
 }
 ```
 
@@ -171,8 +174,6 @@ class MindsPlugin : Plugin() {
 
 Este plugin foi implementado em `Kotlin` e possui dois métodos, "`authentication`" e "`enrollment`", além do método "`result`" que é utilizado para retornar o resultado da atividade que vem da SDK.
 
-Com essas informações, é possível criar um readme que descreva como adicionar este plugin em um projeto que utiliza Capacitor.
-
 Veja o código completo: 
 
 ```kotlin
@@ -195,6 +196,7 @@ import org.json.JSONObject
 
 @CapacitorPlugin(name = "Minds")
 class MindsPlugin : Plugin() {
+
   private lateinit var authenticationMindsSDK: MindsSDK
   private lateinit var enrollmentMindsSDK: MindsSDK
   private lateinit var _result: PluginCall
@@ -215,25 +217,25 @@ class MindsPlugin : Plugin() {
           val intent = MindsDigital.getIntent(context, authenticationMindsSDK)
           startActivityForResult(call, intent, "result")
         } catch (e: InvalidCPF) {
-          _result.reject("invalid_cpf", e.message)
+          _result.reject(e.message, "invalid_cpf")
         } catch (e: InvalidPhoneNumber) {
-          _result.reject("invalid_phone_number", e.message)
+          _result.reject(e.message, "invalid_phone_number")
         } catch (e: CustomerNotFoundToPerformVerification) {
-          _result.reject("customer_not_found", e.message)
+          _result.reject(e.message, "customer_not_found")
         } catch (e: CustomerNotEnrolled) {
-          _result.reject("customer_not_enrolled", e.message)
+          _result.reject(e.message, "customer_not_enrolled")
         } catch (e: CustomerNotCertified) {
-          _result.reject("customer_not_certified", e.message)
+          _result.reject(e.message, "customer_not_certified")
         } catch (e: InvalidToken) {
-          _result.reject("invalid_token", e.message)
+          _result.reject(e.message, "invalid_token")
         } catch (e: InternalServerException) {
-          _result.reject("internal_server_error", e.message)
+          _result.reject(e.message, "internal_server_error")
         } catch (e: Exception) {
-          _result.reject("MINDS_SDK_INIT_ERROR", e.message)
+          _result.reject(e.message, "MINDS_SDK_INIT_ERROR")
         }
       }
     } catch (e: Exception) {
-      _result.reject("MINDS_SDK_INIT_ERROR", e.message)
+      _result.reject(e.message, "MINDS_SDK_INIT_ERROR")
     }
   }
 
@@ -252,25 +254,25 @@ class MindsPlugin : Plugin() {
           val intent = MindsDigital.getIntent(context, enrollmentMindsSDK)
           startActivityForResult(call, intent, "result")
         } catch (e: InvalidCPF) {
-          _result.reject("invalid_cpf", e.message)
+          _result.reject(e.message, "invalid_cpf")
         } catch (e: InvalidPhoneNumber) {
-          _result.reject("invalid_phone_number", e.message)
+          _result.reject(e.message, "invalid_phone_number")
         } catch (e: CustomerNotFoundToPerformVerification) {
-          _result.reject("customer_not_found", e.message)
+          _result.reject(e.message, "customer_not_found")
         } catch (e: CustomerNotEnrolled) {
-          _result.reject("customer_not_enrolled", e.message)
+          _result.reject(e.message, "customer_not_enrolled")
         } catch (e: CustomerNotCertified) {
-          _result.reject("customer_not_certified", e.message)
+          _result.reject(e.message, "customer_not_certified")
         } catch (e: InvalidToken) {
-          _result.reject("invalid_token", e.message)
+          _result.reject(e.message, "invalid_token")
         } catch (e: InternalServerException) {
-          _result.reject("internal_server_error", e.message)
+          _result.reject(e.message, "internal_server_error")
         } catch (e: Exception) {
-          _result.reject("MINDS_SDK_INIT_ERROR", e.message)
+          _result.reject(e.message, "MINDS_SDK_INIT_ERROR")
         }
       }
     } catch (e: Exception) {
-      _result.reject("MINDS_SDK_INIT_ERROR", e.message)
+      _result.reject(e.message, "MINDS_SDK_INIT_ERROR")
     }
   }
 
@@ -348,7 +350,7 @@ Após realizar este registro, o plugin estará pronto para ser utilizado em sua 
 
 O plugin exporta uma interface chamada `MindsPlugin` com dois métodos, `authentication` e `enrollment`, ambos recebendo um objeto `options` com as informações necessárias para autenticação ou cadastro de voz. O método authentication retorna um objeto Promise com o resultado.
 
-Para facilitar crie uma interface para receber o resultado do plugim:
+Para facilitar crie uma interface para receber o resultado do plugin:
 
 <details>
 <summary>VoiceBiometricsResponse</summary>
@@ -411,7 +413,7 @@ export default Minds;
 
 Em caso de erro "What went wrong: Execution failed for task `:app:processDebugMainManifest` , você deve adicionar a tag "tools:replace" com o valor "android:label" dentro da tag <application> no arquivo AndroidManifest.xml do seu projeto. 
 
-Esse erro ocorre porque há um conflito no arquivo AndroidManifest.xml, especificamente com a tag <application>. O atributo application@label está presente tanto no arquivo AndroidManifest.xml do projeto quanto no arquivo AndroidManifest.xml da SDK da Minds.
+Esse erro ocorre porque há um conflito no arquivo AndroidManifest.xml, especificamente com a tag `application`. O atributo application@label está presente tanto no arquivo AndroidManifest.xml do projeto quanto no arquivo AndroidManifest.xml da SDK da Minds.
 
 O código deve ficar assim:
 
@@ -422,6 +424,13 @@ O código deve ficar assim:
 ```
 
 Dessa forma, o atributo label do arquivo da SDK será substituído pelo atributo label do seu projeto. Essa configuração permitirá que o erro seja resolvido.
+
+# Referências
+
+Para mais informações sobre o Capacitor acessar documentação oficieal em: https://capacitorjs.com/docs/plugins/android
+
+  
+  
 
 
 
