@@ -196,6 +196,7 @@ import org.json.JSONObject
 
 @CapacitorPlugin(name = "Minds")
 class MindsPlugin : Plugin() {
+
   private lateinit var authenticationMindsSDK: MindsSDK
   private lateinit var enrollmentMindsSDK: MindsSDK
   private lateinit var _result: PluginCall
@@ -216,25 +217,25 @@ class MindsPlugin : Plugin() {
           val intent = MindsDigital.getIntent(context, authenticationMindsSDK)
           startActivityForResult(call, intent, "result")
         } catch (e: InvalidCPF) {
-          _result.reject("invalid_cpf", e.message)
+          _result.reject(e.message, "invalid_cpf")
         } catch (e: InvalidPhoneNumber) {
-          _result.reject("invalid_phone_number", e.message)
+          _result.reject(e.message, "invalid_phone_number")
         } catch (e: CustomerNotFoundToPerformVerification) {
-          _result.reject("customer_not_found", e.message)
+          _result.reject(e.message, "customer_not_found")
         } catch (e: CustomerNotEnrolled) {
-          _result.reject("customer_not_enrolled", e.message)
+          _result.reject(e.message, "customer_not_enrolled")
         } catch (e: CustomerNotCertified) {
-          _result.reject("customer_not_certified", e.message)
+          _result.reject(e.message, "customer_not_certified")
         } catch (e: InvalidToken) {
-          _result.reject("invalid_token", e.message)
+          _result.reject(e.message, "invalid_token")
         } catch (e: InternalServerException) {
-          _result.reject("internal_server_error", e.message)
+          _result.reject(e.message, "internal_server_error")
         } catch (e: Exception) {
-          _result.reject("MINDS_SDK_INIT_ERROR", e.message)
+          _result.reject(e.message, "MINDS_SDK_INIT_ERROR")
         }
       }
     } catch (e: Exception) {
-      _result.reject("MINDS_SDK_INIT_ERROR", e.message)
+      _result.reject(e.message, "MINDS_SDK_INIT_ERROR")
     }
   }
 
@@ -253,25 +254,25 @@ class MindsPlugin : Plugin() {
           val intent = MindsDigital.getIntent(context, enrollmentMindsSDK)
           startActivityForResult(call, intent, "result")
         } catch (e: InvalidCPF) {
-          _result.reject("invalid_cpf", e.message)
+          _result.reject(e.message, "invalid_cpf")
         } catch (e: InvalidPhoneNumber) {
-          _result.reject("invalid_phone_number", e.message)
+          _result.reject(e.message, "invalid_phone_number")
         } catch (e: CustomerNotFoundToPerformVerification) {
-          _result.reject("customer_not_found", e.message)
+          _result.reject(e.message, "customer_not_found")
         } catch (e: CustomerNotEnrolled) {
-          _result.reject("customer_not_enrolled", e.message)
+          _result.reject(e.message, "customer_not_enrolled")
         } catch (e: CustomerNotCertified) {
-          _result.reject("customer_not_certified", e.message)
+          _result.reject(e.message, "customer_not_certified")
         } catch (e: InvalidToken) {
-          _result.reject("invalid_token", e.message)
+          _result.reject(e.message, "invalid_token")
         } catch (e: InternalServerException) {
-          _result.reject("internal_server_error", e.message)
+          _result.reject(e.message, "internal_server_error")
         } catch (e: Exception) {
-          _result.reject("MINDS_SDK_INIT_ERROR", e.message)
+          _result.reject(e.message, "MINDS_SDK_INIT_ERROR")
         }
       }
     } catch (e: Exception) {
-      _result.reject("MINDS_SDK_INIT_ERROR", e.message)
+      _result.reject(e.message, "MINDS_SDK_INIT_ERROR")
     }
   }
 
