@@ -174,8 +174,6 @@ class MindsPlugin : Plugin() {
 
 Este plugin foi implementado em `Kotlin` e possui dois métodos, "`authentication`" e "`enrollment`", além do método "`result`" que é utilizado para retornar o resultado da atividade que vem da SDK.
 
-Com essas informações, é possível criar um readme que descreva como adicionar este plugin em um projeto que utiliza Capacitor.
-
 Veja o código completo: 
 
 ```kotlin
