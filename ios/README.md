@@ -81,6 +81,410 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 # Criação do plugin em swift
 
-- Crie o arquivo swift com o nome de "MindspLG"
+- Crie o arquivo swift com o nome de "MindsPlugin.swift"
+
+Adicione o código abaixo:
+
+```swift
+import Foundation
+import Capacitor
+import MindsSDK
+import AVFAudio
+
+@objc(MindsPlugin)
+public class MindsPlugin: CAPPlugin, MindsSDKDelegate {
+    // ...
+}
+```
+
+A classe MindsPlugin é a classe principal do plugin. Ela implementa a interface MindsSDKDelegate, que é usada para receber o resultado que vem da SDK da Minds Digital.
+
+O plugin oferece dois métodos principais:
+
+## Autenticação
+
+Este método inicia o processo de autenticação. Recebe como parâmetros obrigatórios o CPF e o token de autenticação.
+
+```swift
+@objc func authentication(_ call: CAPPluginCall) {
+    let cpf = call.getString("cpf") ?? ""
+    let token = call.getString("token") ?? ""
+    let telephone = call.getString("telephone") ?? ""
+    
+    biometricsCall = call
+    self.startSDK(processType: .authentication, cpf: cpf, token: token, telephone: telephone, externalId: nil, externalCustomerId: nil)
+}
+```
+
+## Enrollment
+
+```swift
+@objc func enrollment(_ call: CAPPluginCall) {
+    let cpf = call.getString("cpf") ?? ""
+    let token = call.getString("token") ?? ""
+    let telephone = call.getString("telephone") ?? ""
+    
+    biometricsCall = call
+    self.startSDK(processType: .enrollment, cpf: cpf, token: token, telephone: telephone, externalId: nil, externalCustomerId: nil)
+}
+```
+
+Ambos os métodos retornam um JSON com informações sobre o resultado da SDK da Minds Digital.
+
+## Inicialização da SDK
+
+Para inicializar a SDK, você pode chamar a função startSDK e passar os seguintes parâmetros:
+
+- processType: o tipo de processo a ser executado, que pode ser autenticação ou cadastro de voz.
+- cpf: CPF do cliente
+- token: o token de autenticação.
+- telephone: Número de telefone do cliente
+- externalId: ID externo para posterior identificação do áudio.
+- externalCustomerId: ID externo para identificação do cliente que está enviando o áudio
+
+Abaixo está um exemplo de como chamar a função startSDK:
+
+
+```swift
+    private func startSDK(processType: MindsSDK.ProcessType, cpf: String, token: String, telephone: String, externalId: String?, externalCustomerId: String?) {
+        sdk = MindsSDK(delegate: self)
+        sdk?.setToken(token)
+        sdk?.setExternalId(externalId)
+        sdk?.setExternalCustomerId(externalCustomerId)
+        sdk?.setPhoneNumber(telephone)
+        sdk?.setShowDetails(true)
+        sdk?.setCpf(cpf)
+        sdk?.setProcessType(processType)
+        sdk?.setEnvironment(.sandbox)
+        
+        DispatchQueue.main.async {
+            
+            guard let navigationController: UINavigationController = self.bridge?.viewController?.navigationController else { return }
+            
+        
+            self.sdk?.initialize(on: navigationController) { error in
+                if let error = error {
+                    do {
+                        throw error
+                    } catch DomainError.invalidCPF(let message) {
+                        self.biometricsCall?.reject(message!, "invalid_cpf")
+                        
+                    } catch DomainError.invalidPhoneNumber(let message) {
+                        self.biometricsCall?.reject(message!, "invalid_phone_number")
+                        
+                    } catch DomainError.customerNotFoundToPerformVerification(let message) {
+                        self.biometricsCall?.reject(message!, "customer_not_found")
+                        
+                    } catch DomainError.customerNotEnrolled(let message) {
+                        self.biometricsCall?.reject(message!, "customer_not_enrolled")
+                        
+                    } catch DomainError.customerNotCertified(let message) {
+                        self.biometricsCall?.reject(message!, "customer_not_certified")
+                        
+                    } catch DomainError.invalidToken {
+                        self.biometricsCall?.reject("Invalid Token", "invalid_token")
+                        
+                    } catch DomainError.undefinedEnvironment {
+                        self.biometricsCall?.reject("No environment defined", "undefined_environment")
+                        
+                    } catch DomainError.internalServerException {
+                        self.biometricsCall?.reject("Internal server error", "internal_server_error")
+                        
+                    } catch {
+                        print("\(error): \(error.localizedDescription)")
+                        self.biometricsCall?.reject("ERROR", error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+```
+
+## Implementação do protocolo MindsSDKDelegate
+
+O MindsSDKDelegate é responsável por receber as respostas da SDK. A classe MindsPlugin implementa este delegate e possui duas funções que podem ser chamadas quando a autenticação ou cadastro de voz, ou quando ocorre um erro:
+
+- `onSuccess`: chamado quando a autenticação ou a inscrição são concluídas com sucesso.
+- `onError`: chamado quando ocorre um erro durante a autenticação ou a inscrição.
+
+```swift
+public func onSuccess(_ response: BiometricResponse) {
+    self.biometricsReceive(response)
+}
+
+public func onError(_ response: BiometricResponse) {
+    self.biometricsReceive(response)
+}
+
+public func showMicrophonePermissionPrompt() {
+    AVAudioSession.sharedInstance().requestRecordPermission { granted in
+        print("granted: \(granted)")
+    }
+}
+
+public func microphonePermissionNotGranted() {
+    print("microphonePermissionNotGranted")
+}
+```
+
+Além disso, a classe `MindsPlugin` também implementa as seguintes funções do delegate:
+
+`showMicrophonePermissionPrompt`: chamado quando é necessário solicitar permissão para usar o microfone do dispositivo.
+`microphonePermissionNotGranted`: chamado quando a permissão para usar o microfone do dispositivo não foi concedida.
+
+Implemente a função biometricsReceive que é utilizada no delegate:
+
+```swift
+    private func biometricsReceive(_ response: BiometricResponse) {
+        self.biometricsCall?.resolve([
+            "success": response.success,
+            "error": [
+                "code": response.error?.code,
+                "description": response.error?.description
+            ],
+            "id": response.id,
+            "cpf": response.cpf,
+            "external_id": response.externalID,
+            "created_at": response.createdAt,
+            "result": [
+                "recommended_action": response.result?.recommendedAction as Any,
+                "reasons": response.result?.reasons as Any
+            ],
+            "details": [
+                "flag": [
+                    "id": response.details?.flag?.id as Any ,
+                    "type": response.details?.flag?.type as Any,
+                    "description": response.details?.flag?.description as Any,
+                    "status": response.details?.flag?.status as Any
+                ],
+                "voice_match": [
+                    "result": response.details?.voiceMatch?.result as Any,
+                    "confidence": response.details?.voiceMatch?.confidence as Any,
+                    "status": response.details?.voiceMatch?.status as Any
+                ]
+            ]
+        ])
+    }
+```
+
+# Código completo:
+
+```swift
+import Foundation
+import Capacitor
+import MindsSDK
+import AVFAudio
+
+@objc(MindsPlugin)
+public class MindsPlugin: CAPPlugin, MindsSDKDelegate {
+    
+    public func onSuccess(_ response: BiometricResponse) {
+        self.biometricsReceive(response)
+    }
+    
+    public func onError(_ response: BiometricResponse) {
+        self.biometricsReceive(response)
+    }
+    
+    public func showMicrophonePermissionPrompt() {
+        AVAudioSession.sharedInstance().requestRecordPermission { granted in
+            print("granted: \(granted)")
+        }
+    }
+    
+    public func microphonePermissionNotGranted() {
+        print("microphonePermissionNotGranted")
+    }
+    
+    
+    var sdk: MindsSDK?
+    var navigationController: UINavigationController?
+    var biometricsCall: CAPPluginCall?
+    
+    
+    @objc func authentication(_ call: CAPPluginCall) {
+        let cpf = call.getString("cpf") ?? ""
+        let token = call.getString("token") ?? ""
+        let telephone = call.getString("telephone") ?? ""
+        
+        biometricsCall = call
+        self.startSDK(processType: .authentication, cpf: cpf, token: token, telephone: telephone, externalId: nil, externalCustomerId: nil)
+    }
+    
+    @objc func enrollment(_ call: CAPPluginCall) {
+        let cpf = call.getString("cpf") ?? ""
+        let token = call.getString("token") ?? ""
+        let telephone = call.getString("telephone") ?? ""
+        
+        biometricsCall = call
+        self.startSDK(processType: .enrollment, cpf: cpf, token: token, telephone: telephone, externalId: nil, externalCustomerId: nil)
+    }
+    
+    
+    private func startSDK(processType: MindsSDK.ProcessType, cpf: String, token: String, telephone: String, externalId: String?, externalCustomerId: String?) {
+        sdk = MindsSDK(delegate: self)
+        sdk?.setToken(token)
+        sdk?.setExternalId(externalId)
+        sdk?.setExternalCustomerId(externalCustomerId)
+        sdk?.setPhoneNumber(telephone)
+        sdk?.setShowDetails(true)
+        sdk?.setCpf(cpf)
+        sdk?.setProcessType(processType)
+        sdk?.setEnvironment(.sandbox)
+        
+        DispatchQueue.main.async {
+            
+            guard let navigationController: UINavigationController = self.bridge?.viewController?.navigationController else { return }
+            
+        
+            self.sdk?.initialize(on: navigationController) { error in
+                if let error = error {
+                    do {
+                        throw error
+                    } catch DomainError.invalidCPF(let message) {
+                        self.biometricsCall?.reject(message!, "invalid_cpf")
+                        
+                    } catch DomainError.invalidPhoneNumber(let message) {
+                        self.biometricsCall?.reject(message!, "invalid_phone_number")
+                        
+                    } catch DomainError.customerNotFoundToPerformVerification(let message) {
+                        self.biometricsCall?.reject(message!, "customer_not_found")
+                        
+                    } catch DomainError.customerNotEnrolled(let message) {
+                        self.biometricsCall?.reject(message!, "customer_not_enrolled")
+                        
+                    } catch DomainError.customerNotCertified(let message) {
+                        self.biometricsCall?.reject(message!, "customer_not_certified")
+                        
+                    } catch DomainError.invalidToken {
+                        self.biometricsCall?.reject("Invalid Token", "invalid_token")
+                        
+                    } catch DomainError.undefinedEnvironment {
+                        self.biometricsCall?.reject("No environment defined", "undefined_environment")
+                        
+                    } catch DomainError.internalServerException {
+                        self.biometricsCall?.reject("Internal server error", "internal_server_error")
+                        
+                    } catch {
+                        print("\(error): \(error.localizedDescription)")
+                        self.biometricsCall?.reject("ERROR", error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    private func biometricsReceive(_ response: BiometricResponse) {
+        self.biometricsCall?.resolve([
+            "success": response.success,
+            "error": [
+                "code": response.error?.code,
+                "description": response.error?.description
+            ],
+            "id": response.id,
+            "cpf": response.cpf,
+            "external_id": response.externalID,
+            "created_at": response.createdAt,
+            "result": [
+                "recommended_action": response.result?.recommendedAction as Any,
+                "reasons": response.result?.reasons as Any
+            ],
+            "details": [
+                "flag": [
+                    "id": response.details?.flag?.id as Any ,
+                    "type": response.details?.flag?.type as Any,
+                    "description": response.details?.flag?.description as Any,
+                    "status": response.details?.flag?.status as Any
+                ],
+                "voice_match": [
+                    "result": response.details?.voiceMatch?.result as Any,
+                    "confidence": response.details?.voiceMatch?.confidence as Any,
+                    "status": response.details?.voiceMatch?.status as Any
+                ]
+            ]
+        ])
+    }
+}
+```
+
+# Registro do Plugin
+
+Para finalizar a configuração do plugin, é necessário registrar o mesmo na aplicação. Para isso, deve-se criar o arquivo "MindsPlugin.m" e adicionar o seguinte código:
+
+```objective-c
+#import <Foundation/Foundation.h>
+#import <Capacitor/Capacitor.h>
+
+CAP_PLUGIN(MindsPlugin, "Minds",
+    CAP_PLUGIN_METHOD(authentication, CAPPluginReturnPromise);
+    CAP_PLUGIN_METHOD(enrollment, CAPPluginReturnPromise);
+)
+```
+Após realizar este registro, o plugin estará pronto para ser utilizado em sua aplicação.
+
+# Utilização do plugin
+
+O plugin exporta uma interface chamada `MindsPlugin` com dois métodos, `authentication` e `enrollment`, ambos recebendo um objeto `options` com as informações necessárias para autenticação ou cadastro de voz. O método authentication retorna um objeto Promise com o resultado.
+
+Para facilitar crie uma interface para receber o resultado do plugin:
+
+<details>
+<summary>VoiceBiometricsResponse</summary>
+  
+```typescript
+export interface VoiceBiometricsResponse {
+    success: boolean;
+    error: {
+        code: number;
+        description: string;
+    };
+    id: string;
+    cpf: string;
+    external_id: string;
+    created_at: string;
+    result: {
+        recommended_action: string;
+        reasons: string[];
+    };
+    details: {
+        flag: {
+            id: string;
+            type: string;
+            description: string;
+            status: string;
+        };
+        voice_match: {
+            result: string;
+            confidence: number;
+            status: string;
+        };
+    };
+}
+```  
+</details>
+
+```typescript
+import { registerPlugin } from '@capacitor/core';
+import { VoiceBiometricsResponse } from 'src/types/voiceBiometrics';
+
+export interface MindsPlugin {
+    authentication(options: { cpf: string, token: string, telephone: string }): Promise<VoiceBiometricsResponse>;
+    enrollment(options: { cpf: string, token: string, telephone: string }): Promise<VoiceBiometricsResponse>;
+}
+
+const Minds = registerPlugin<MindsPlugin>('Minds');
+export default Minds;
+```
+
+## 📌 Observação
+
+É importante ressaltar que o integrador deve garantir que a permissão do microfone seja fornecida em seu aplicativo antes de utilizar a SDK. Sem essa permissão, a SDK não funcionará corretamente. É responsabilidade do integrador garantir que seu aplicativo tenha as permissões necessárias para utilizar a SDK com sucesso.
+
+# Referências
+
+Para mais informações sobre o Capacitor acessar documentação oficieal em: https://capacitorjs.com/docs/plugins/android
+
+
 
 
