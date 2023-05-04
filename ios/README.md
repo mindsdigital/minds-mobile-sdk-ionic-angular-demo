@@ -137,7 +137,7 @@ Ambos os métodos retornam um JSON com informações sobre o resultado da SDK da
 
 Para inicializar a SDK, você pode chamar a função startSDK e passar os seguintes parâmetros:
 
-- processType: o tipo de processo a ser executado, que pode ser autenticação ou cadastro de voz.
+- processType: o tipo de processo a ser executado, que pode ser enrollment ou authentication.
 - cpf: CPF do cliente
 - token: o token de autenticação.
 - telephone: Número de telefone do cliente
