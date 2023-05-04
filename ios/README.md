@@ -1,5 +1,8 @@
-# Configuração do Projeto
+# Pré-requisitos
 
+Antes de iniciar é necessário ter instalado e configurado o Capacitor em seu projeto.
+
+# Configuração do Projeto
 
 Para integrar a SDK da Minds no seu projeto iOS, é necessário seguir os seguintes passos:
 
@@ -9,11 +12,6 @@ Para integrar a SDK da Minds no seu projeto iOS, é necessário seguir os seguin
 - Na caixa de diálogo que aparece, cole a URL do repositório da SDK da Minds: https://github.com/mindsdigital/minds-sdk-mobile-ios.git
 - Certifique-se de que o destino esteja selecionado corretamente e clique em "Finish".
 - Aguarde a importação da SDK ser concluída.
-
-
-# Pré-requisitos
-
-Antes de iniciar é necessário ter instalado e configurado o Capacitor em seu projeto.
 
 # AppDelegate
 
