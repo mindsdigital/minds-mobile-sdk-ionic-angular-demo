@@ -118,6 +118,8 @@ Este método inicia o processo de autenticação. Recebe como parâmetros obriga
 
 ## Enrollment
 
+Este método inicia o processo de Cadastro de voz. Recebe como parâmetros obrigatórios o CPF e o token de autenticação.
+
 ```swift
 @objc func enrollment(_ call: CAPPluginCall) {
     let cpf = call.getString("cpf") ?? ""
