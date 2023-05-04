@@ -15,7 +15,7 @@ Para integrar a SDK da Minds no seu projeto iOS, é necessário seguir os seguin
 
 Antes de iniciar é necessário ter instalado e configurado o Capacitor em seu projeto.
 
-# Funcionamento
+# AppDelegate
 
 Este trecho de código inicializa o Capacitor e configura o controlador de visualização raiz para a aplicação. Ele faz isso chamando a função `application(_:didFinishLaunchingWithOptions:)` do protocolo `UIApplicationDelegate`.
 
