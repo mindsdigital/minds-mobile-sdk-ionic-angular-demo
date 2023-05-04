@@ -135,7 +135,7 @@ Ambos os métodos retornam um JSON com informações sobre o resultado da SDK da
 
 ## Inicialização da SDK
 
-Para inicializar a SDK, você pode chamar a função startSDK e passar os seguintes parâmetros:
+Para inicializar a SDK, você pode chamar a chamar a função startSDK e passar os seguintes parâmetros:
 
 - processType: o tipo de processo a ser executado, que pode ser enrollment ou authentication.
 - cpf: CPF do cliente
@@ -144,7 +144,7 @@ Para inicializar a SDK, você pode chamar a função startSDK e passar os seguin
 - externalId: ID externo para posterior identificação do áudio.
 - externalCustomerId: ID externo para identificação do cliente que está enviando o áudio
 
-Abaixo está um exemplo de como chamar a função startSDK:
+Abaixo está um exemplo completo de como implementar a função startSDK:
 
 
 ```swift
