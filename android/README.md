@@ -407,9 +407,9 @@ export default Minds;
 
 ## 🛠️ Corrigir possíveis problemas 
 
-Em caso de erro "What went wrong: Execution failed for task `:app:processDebugMainManifest` , você deve adicionar a tag "tools:replace" com o valor "android:label" dentro da tag <application> no arquivo AndroidManifest.xml do seu projeto. 
+Em caso de erro "What went wrong: Execution failed for task `:app:processDebugMainManifest` , você deve adicionar a tag "tools:replace" com o valor "android:label,theme" dentro da tag <application> no arquivo AndroidManifest.xml do seu projeto. 
 
-Esse erro ocorre porque há um conflito no arquivo AndroidManifest.xml, especificamente com a tag `application`. O atributo application@label está presente tanto no arquivo AndroidManifest.xml do projeto quanto no arquivo AndroidManifest.xml da SDK da Minds.
+Esse erro ocorre porque há um conflito no arquivo AndroidManifest.xml, especificamente com a tag `application`. O atributo application@label está presente tanto no arquivo AndroidManifest.xml do projeto quanto no arquivo AndroidManifest.xml da SDK da Minds Digital.
 
 O código deve ficar assim:
 
