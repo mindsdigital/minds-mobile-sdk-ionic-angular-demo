@@ -3,7 +3,7 @@
 
 Antes de iniciar é necessário ter instalado e configurado o Capacitor em seu projeto.
 
-Caso não tenha configurado siga os passos a seguir: https://ionicframework.com/docs/cli/commands/capacitor-add
+Caso não tenha configurado, siga os passos a seguir: https://ionicframework.com/docs/cli/commands/capacitor-add
 
 # Configuração do Projeto
 
