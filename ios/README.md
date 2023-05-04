@@ -13,7 +13,7 @@ Para integrar a SDK da Minds no seu projeto iOS, é necessário seguir os seguin
 
 # Pré-requisitos
 
-Antes de utilizar este trecho de código, é necessário ter instalado e configurado o Capacitor em seu projeto. Além disso, é preciso ter um controlador de visualização raiz (root view controller) para a aplicação.
+Antes de iniciar é necessário ter instalado e configurado o Capacitor em seu projeto.
 
 # Funcionamento
 
