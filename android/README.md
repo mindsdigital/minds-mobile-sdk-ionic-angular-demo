@@ -310,10 +310,6 @@ class MindsPlugin : Plugin() {
           put("confidence", mindsSDKResponse?.details?.voice_match?.confidence)
           put("status", mindsSDKResponse?.details?.voice_match?.status)
         })
-        put("antispoofing", JSONObject().apply {
-          put("result", mindsSDKResponse?.details?.antispoofing?.result)
-          put("status", mindsSDKResponse?.details?.antispoofing?.status)
-        })
       })
     }
     val jsonResult = JSObject.fromJSONObject(jsonObject)
