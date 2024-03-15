@@ -56,8 +56,10 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation project(':capacitor-cordova-android-plugins')
-    implementation 'digital.minds.clients.sdk.android:release:1.17.5'
-    implementation 'digital.minds.clients.sdk.kotlin.core:release:1.0.16'
+    // implementation 'digital.minds.clients.sdk.android:release:1.17.5'
+    // implementation 'digital.minds.clients.sdk.kotlin.core:release:1.0.16'
+    implementation project(path: ':minds-sdk-mobile-android')
+    implementation project(path: ':minds-sdk-mobile-kotlin-core')
 }
 
 apply from: 'capacitor.build.gradle'

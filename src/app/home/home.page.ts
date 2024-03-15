@@ -40,11 +40,12 @@ export class HomePage {
     const loading = await this.presentLoading();
     try {
       const result = await Minds[method]({
-        cpf: cpf,
+        document: cpf,
         token: '',
         telephone: phoneNumber,
       });
       this.biometricsResponse = result;
+      console.log(result)
       this.toogleModal();
     } catch (e: any) {
       const toast = await this.toastController.create({

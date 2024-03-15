@@ -6,12 +6,12 @@ import digital.minds.clients.sdk.kotlin.main.MindsSDK
 
 class MindsConfig {
   companion object {
-    fun enrollment(cpf: String, token: String, telephone: String): MindsSDK {
+    fun enrollment(document: String, token: String, telephone: String): MindsSDK {
       return MindsSDK
         .Builder()
         .setToken(token)
-        .setCPF(cpf)
-        .setEnvironment(Environment.SANDBOX)
+        .setDocument(document)
+        .setEnvironment(Environment.STAGING)
         .setExternalID(null)
         .setPhoneNumber(telephone)
         .setProcessType(ProcessType.ENROLLMENT)
@@ -20,12 +20,12 @@ class MindsConfig {
         .build()
     }
 
-    fun authentication(cpf: String, token: String, telephone: String): MindsSDK {
+    fun authentication(document: String, token: String, telephone: String): MindsSDK {
       return MindsSDK
         .Builder()
         .setToken(token)
-        .setCPF(cpf)
-        .setEnvironment(Environment.SANDBOX)
+        .setDocument(document)
+        .setEnvironment(Environment.STAGING)
         .setExternalID(null)
         .setPhoneNumber(telephone)
         .setProcessType(ProcessType.AUTHENTICATION)

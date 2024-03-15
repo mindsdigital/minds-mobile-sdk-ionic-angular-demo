@@ -13,11 +13,11 @@ import AVFAudio
 @objc(MindsPlugin)
 public class MindsPlugin: CAPPlugin, MindsSDKDelegate {
     
-    public func onSuccess(_ response: BiometricResponse) {
+    public func onSuccess(_ response: BiometricResponse?) {
         self.biometricsReceive(response)
     }
     
-    public func onError(_ response: BiometricResponse) {
+    public func onError(_ response: BiometricResponse?) {
         self.biometricsReceive(response)
     }
     
@@ -38,44 +38,47 @@ public class MindsPlugin: CAPPlugin, MindsSDKDelegate {
     
     
     @objc func authentication(_ call: CAPPluginCall) {
-        let cpf = call.getString("cpf") ?? ""
+        let document = call.getString("document") ?? ""
         let token = call.getString("token") ?? ""
         let telephone = call.getString("telephone") ?? ""
         
         biometricsCall = call
-        self.startSDK(processType: .authentication, cpf: cpf, token: token, telephone: telephone, externalId: nil, externalCustomerId: nil)
+        self.startSDK(processType: .authentication, document: document, token: token, telephone: telephone, externalId: nil, externalCustomerId: nil)
     }
     
     @objc func enrollment(_ call: CAPPluginCall) {
-        let cpf = call.getString("cpf") ?? ""
+        let document = call.getString("document") ?? ""
         let token = call.getString("token") ?? ""
         let telephone = call.getString("telephone") ?? ""
         
         biometricsCall = call
-        self.startSDK(processType: .enrollment, cpf: cpf, token: token, telephone: telephone, externalId: nil, externalCustomerId: nil)
+        self.startSDK(processType: .enrollment, document: document, token: token, telephone: telephone, externalId: nil, externalCustomerId: nil)
     }
     
     
-    private func startSDK(processType: MindsSDK.ProcessType, cpf: String, token: String, telephone: String, externalId: String?, externalCustomerId: String?) {
+    private func startSDK(processType: MindsSDK.ProcessType, document: String, token: String, telephone: String, externalId: String?, externalCustomerId: String?) {
         sdk = MindsSDK(delegate: self)
         sdk?.setToken(token)
         sdk?.setExternalId(externalId)
         sdk?.setExternalCustomerId(externalCustomerId)
         sdk?.setPhoneNumber(telephone)
         sdk?.setShowDetails(true)
-        sdk?.setCpf(cpf)
+        sdk?.setDocument(document)
         sdk?.setProcessType(processType)
-        sdk?.setEnvironment(.sandbox)
+        sdk?.setEnvironment(.staging)
         
         DispatchQueue.main.async {
             
             guard let navigationController: UINavigationController = self.bridge?.viewController?.navigationController else { return }
             
-        
+            
             self.sdk?.initialize(on: navigationController) { error in
                 if let error = error {
                     do {
                         throw error
+                    } catch DomainError.invalidDocument(let message) {
+                        self.biometricsCall?.reject(message!, "invalid_document")
+                        
                     } catch DomainError.invalidCPF(let message) {
                         self.biometricsCall?.reject(message!, "invalid_cpf")
                         
@@ -110,34 +113,63 @@ public class MindsPlugin: CAPPlugin, MindsSDKDelegate {
     }
     
     
-    private func biometricsReceive(_ response: BiometricResponse) {
+    private func biometricsReceive(_ response: BiometricResponse?) {
         self.biometricsCall?.resolve([
-            "success": response.success,
+            "success": response?.success as Any,
             "error": [
-                "code": response.error?.code,
-                "description": response.error?.description
+                "code": response?.error?.code as Any,
+                "description": response?.error?.description as Any
             ],
-            "id": response.id,
-            "cpf": response.cpf,
-            "external_id": response.externalID,
-            "created_at": response.createdAt,
+            "id": response?.id as Any,
+            "cpf": response?.cpf as Any,
+            "external_id": response?.externalID as Any,
+            "created_at": response?.createdAt as Any,
+            "utc_created_at": response?.utcCreatedAt as Any,
             "result": [
-                "recommended_action": response.result?.recommendedAction as Any,
-                "reasons": response.result?.reasons as Any
+                "recommended_action": response?.result?.recommendedAction as Any,
+                "reasons": response?.result?.reasons as Any
             ],
             "details": [
                 "flag": [
-                    "id": response.details?.flag?.id as Any ,
-                    "type": response.details?.flag?.type as Any,
-                    "description": response.details?.flag?.description as Any,
-                    "status": response.details?.flag?.status as Any
+                    "type": response?.details?.flag?.type as Any,
+                    "status": response?.details?.flag?.status as Any
+                ],
+                "liveness": [
+                    "status": response?.details?.liveness?.status as Any,
+                    "replay_attack": [
+                        "enabled": response?.details?.liveness?.replayAttack?.enabled as Any,
+                        "status": response?.details?.liveness?.replayAttack?.status as Any,
+                        "result": response?.details?.liveness?.replayAttack?.result as Any,
+                        "confidence": response?.details?.liveness?.replayAttack?.confidence as Any,
+                        "score": response?.details?.liveness?.replayAttack?.score as Any,
+                        "threshold": response?.details?.liveness?.replayAttack?.threshold as Any
+                    ],
+                    "deepfake": [
+                        "enabled": response?.details?.liveness?.deepFake?.enabled as Any,
+                        "status": response?.details?.liveness?.deepFake?.status as Any,
+                        "result": response?.details?.liveness?.deepFake?.result as Any,
+                        "confidence": response?.details?.liveness?.deepFake?.confidence as Any,
+                        "score": response?.details?.liveness?.deepFake?.score as Any,
+                        "threshold": response?.details?.liveness?.deepFake?.threshold as Any
+                    ],
+                    "sentence_match": [
+                        "enabled": response?.details?.liveness?.sentenceMatch?.enabled as Any,
+                        "status": response?.details?.liveness?.sentenceMatch?.status as Any,
+                        "result": response?.details?.liveness?.sentenceMatch?.result as Any,
+                        "confidence": response?.details?.liveness?.sentenceMatch?.confidence as Any,
+                        "score": response?.details?.liveness?.sentenceMatch?.score as Any,
+                        "threshold": response?.details?.liveness?.sentenceMatch?.threshold as Any
+                    ]
                 ],
                 "voice_match": [
-                    "result": response.details?.voiceMatch?.result as Any,
-                    "confidence": response.details?.voiceMatch?.confidence as Any,
-                    "status": response.details?.voiceMatch?.status as Any
+                    "status": response?.details?.voiceMatch?.status as Any,
+                    "result": response?.details?.voiceMatch?.result as Any,
+                    "confidence": response?.details?.voiceMatch?.confidence as Any,
+                    "score": response?.details?.voiceMatch?.score as Any,
+                    "threshold": response?.details?.voiceMatch?.threshold as Any
                 ]
             ]
+            
         ])
     }
 }

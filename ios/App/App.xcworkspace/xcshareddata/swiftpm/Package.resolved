@@ -19,15 +19,6 @@
       }
     },
     {
-      "identity" : "minds-sdk-mobile-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mindsdigital/minds-sdk-mobile-ios/",
-      "state" : {
-        "branch" : "main",
-        "revision" : "2d83086493cc8979a7ca803012449c117ceb6cad"
-      }
-    },
-    {
       "identity" : "ogg-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vector-im/ogg-swift.git",
@@ -50,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa",
       "state" : {
-        "revision" : "e6dcfba32f2861438b82c7ad34e058b23c83daf6",
-        "version" : "8.6.0"
+        "revision" : "3b9a8e69ca296bd8cd0e317ad7a448e5daf4a342",
+        "version" : "8.18.0"
       }
     },
     {

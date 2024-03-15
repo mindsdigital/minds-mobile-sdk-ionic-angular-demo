@@ -1,5 +1,4 @@
 package io.ionic.starter
-
 import androidx.activity.result.ActivityResult
 import com.getcapacitor.*
 import com.getcapacitor.annotation.ActivityCallback
@@ -26,18 +25,20 @@ class MindsPlugin : Plugin() {
 
   @PluginMethod
   fun authentication(call: PluginCall) {
-    val cpf: String? = call.getString("cpf")
+    val document: String? = call.getString("document")
     val token: String? = call.getString("token")
     val telephone: String? = call.getString("telephone")
     _result = call
 
     try {
       authenticationMindsSDK =
-        MindsConfig.authentication(cpf!!, token!!, telephone!!)
+        MindsConfig.authentication(document!!, token!!, telephone!!)
       CoroutineScope(Dispatchers.Main).launch {
         try {
           val intent = MindsDigital.getIntent(context, authenticationMindsSDK)
           startActivityForResult(call, intent, "result")
+        } catch (e: InvalidDocument) {
+          _result.reject(e.message, "invalid_document")
         } catch (e: InvalidCPF) {
           _result.reject(e.message, "invalid_cpf")
         } catch (e: InvalidPhoneNumber) {
@@ -63,18 +64,20 @@ class MindsPlugin : Plugin() {
 
   @PluginMethod
   fun enrollment(call: PluginCall) {
-    val cpf: String? = call.getString("cpf")
+    val document: String? = call.getString("document")
     val token: String? = call.getString("token")
     val telephone: String? = call.getString("telephone")
     _result = call
 
     try {
       enrollmentMindsSDK =
-        MindsConfig.enrollment(cpf!!, token!!, telephone!!)
+        MindsConfig.enrollment(document!!, token!!, telephone!!)
       CoroutineScope(Dispatchers.Main).launch {
         try {
           val intent = MindsDigital.getIntent(context, enrollmentMindsSDK)
           startActivityForResult(call, intent, "result")
+        } catch (e: InvalidDocument) {
+          _result.reject(e.message, "invalid_document")
         } catch (e: InvalidCPF) {
           _result.reject(e.message, "invalid_cpf")
         } catch (e: InvalidPhoneNumber) {
@@ -104,34 +107,61 @@ class MindsPlugin : Plugin() {
       return
     }
     val mindsSDKResponse = result.data?.extras?.get(VOICE_MATCH_RESPONSE) as? VoiceMatchResponse
-    val jsonObject = JSONObject().apply {
-      put("success", mindsSDKResponse?.success)
-      put("error", JSONObject().apply {
-        put("code", mindsSDKResponse?.error?.code)
-        put("description", mindsSDKResponse?.error?.description)
-      })
-      put("id", mindsSDKResponse?.id)
-      put("cpf", mindsSDKResponse?.cpf)
-      put("external_id", mindsSDKResponse?.external_id)
-      put("created_at", mindsSDKResponse?.created_at)
-      put("result", JSONObject().apply {
-        put("recommended_action", mindsSDKResponse?.result?.recommended_action)
-        put("reasons", JSONArray(mindsSDKResponse?.result?.reasons))
-      })
-      put("details", JSONObject().apply {
-        put("flag", JSONObject().apply {
-          put("id", mindsSDKResponse?.details?.flag?.id)
-          put("type", mindsSDKResponse?.details?.flag?.type)
-          put("description", mindsSDKResponse?.details?.flag?.description)
-          put("status", mindsSDKResponse?.details?.flag?.status)
-        })
-        put("voice_match", JSONObject().apply {
-          put("result", mindsSDKResponse?.details?.voice_match?.result)
-          put("confidence", mindsSDKResponse?.details?.voice_match?.confidence)
-          put("status", mindsSDKResponse?.details?.voice_match?.status)
-        })
-      })
-    }
+            val jsonObject = JSONObject()
+            jsonObject.put("success", mindsSDKResponse?.success)
+            jsonObject.put("error", JSONObject().apply {
+                put("code", mindsSDKResponse?.error?.code)
+                put("description", mindsSDKResponse?.error?.description)
+            })
+            jsonObject.put("id", mindsSDKResponse?.id)
+            jsonObject.put("cpf", mindsSDKResponse?.cpf)
+            jsonObject.put("external_id", mindsSDKResponse?.externalId)
+            jsonObject.put("created_at", mindsSDKResponse?.createdAt)
+            jsonObject.put("utc_created_at", mindsSDKResponse?.utcCreatedAt)
+            jsonObject.put("result", JSONObject().apply {
+                put("recommended_action", mindsSDKResponse?.result?.recommendedAction)
+                put("reasons", JSONArray(mindsSDKResponse?.result?.reasons))
+            })
+            jsonObject.put("details", JSONObject().apply {
+                jsonObject.put("flag", JSONObject().apply {
+                    put("type", mindsSDKResponse?.details?.flag?.type)
+                    put("status", mindsSDKResponse?.details?.flag?.status)
+                })
+                put("liveness", JSONObject().apply {
+                    put("status", mindsSDKResponse?.details?.liveness?.status)
+                    put("replay_attack", JSONObject().apply {
+                        put("enabled", mindsSDKResponse?.details?.liveness?.replayAttack?.enabled)
+                        put("status", mindsSDKResponse?.details?.liveness?.replayAttack?.status)
+                        put("result", mindsSDKResponse?.details?.liveness?.replayAttack?.result)
+                        put("confidence", mindsSDKResponse?.details?.liveness?.replayAttack?.confidence)
+                        put("score", mindsSDKResponse?.details?.liveness?.replayAttack?.score)
+                        put("threshold", mindsSDKResponse?.details?.liveness?.replayAttack?.threshold)
+                    })
+                    put("deepfake", JSONObject().apply {
+                        put("enabled", mindsSDKResponse?.details?.liveness?.deepFake?.enabled)
+                        put("status", mindsSDKResponse?.details?.liveness?.deepFake?.status)
+                        put("result", mindsSDKResponse?.details?.liveness?.deepFake?.result)
+                        put("confidence", mindsSDKResponse?.details?.liveness?.deepFake?.confidence)
+                        put("score", mindsSDKResponse?.details?.liveness?.deepFake?.score)
+                        put("threshold", mindsSDKResponse?.details?.liveness?.deepFake?.threshold)
+                    })
+                    put("sentence_match", JSONObject().apply {
+                        put("enabled", mindsSDKResponse?.details?.liveness?.sentenceMatch?.enabled)
+                        put("status", mindsSDKResponse?.details?.liveness?.sentenceMatch?.status)
+                        put("result", mindsSDKResponse?.details?.liveness?.sentenceMatch?.result)
+                        put("confidence", mindsSDKResponse?.details?.liveness?.sentenceMatch?.confidence)
+                        put("score", mindsSDKResponse?.details?.liveness?.sentenceMatch?.score)
+                        put("threshold", mindsSDKResponse?.details?.liveness?.sentenceMatch?.threshold)
+                    })
+                })
+                put("voice_match", JSONObject().apply {
+                    put("status", mindsSDKResponse?.details?.voiceMatch?.status)
+                    put("result", mindsSDKResponse?.details?.voiceMatch?.result)
+                    put("confidence", mindsSDKResponse?.details?.voiceMatch?.confidence)
+                    put("score", mindsSDKResponse?.details?.voiceMatch?.score)
+                    put("threshold", mindsSDKResponse?.details?.voiceMatch?.threshold)
+                })
+            })
     val jsonResult = JSObject.fromJSONObject(jsonObject)
     _result.resolve(jsonResult)
   }
