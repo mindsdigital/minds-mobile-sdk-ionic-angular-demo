@@ -3,3 +3,7 @@ include ':capacitor-cordova-android-plugins'
 project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
 
 apply from: 'capacitor.settings.gradle'
+
+include ':minds-sdk-mobile-kotlin-core', ':minds-sdk-mobile-android'
+project(':minds-sdk-mobile-kotlin-core').projectDir = new File('/Users/wennys/Minds/microservices/minds-sdk-mobile-kotlin-core')
+project(':minds-sdk-mobile-android').projectDir = new File('/Users/wennys/Minds/microservices/minds-sdk-mobile-android/minds-sdk-mobile-android')
